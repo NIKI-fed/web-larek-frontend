@@ -40,3 +40,16 @@ npm run build
 ```
 yarn build
 ```
+
+## Описание данных
+
+Интерфейс, описывающий данные карточки товара:
+
+interface IGoodsCard {
+    id: string;
+    description?: string;
+    image: string;
+    title: string;
+    category: string;
+    price: number | null;
+}
