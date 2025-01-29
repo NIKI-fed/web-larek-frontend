@@ -22,9 +22,19 @@ export interface IPaymentMethod {
 
 // Интерфейс для описания контактных данных покупателя
 export interface IContactData {
-    adress: string;
+    address: string;
     email: string;
     phone: string;
+}
+
+// Интерфейс для описания заказа
+export interface IOrder {
+    payment: PaymentMethod;
+    address: string;
+    email: string;
+    phone: string;
+    goods?: string[];
+    total_cost?: number;
 }
 
 // Интерфейс для описания успешного оформления заказа
@@ -33,6 +43,8 @@ export interface ISuccess {
 }
 
 // Тип оплаты
-export type PaymentMethod = 'card | cash'
+export type PaymentMethod = 'card' | 'cash'
 
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
 

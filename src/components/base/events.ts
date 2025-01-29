@@ -1,12 +1,16 @@
 // Хорошая практика даже простые типы выносить в алиасы
 // Зато когда захотите поменять это достаточно сделать в одном месте
-type EventName = string | RegExp;
-type Subscriber = Function;
-type EmitterEvent = {
+type EventName = string | RegExp; // имя события - строка либо регулярное выражение
+type Subscriber = Function; // функция-обработчик события
+type EmitterEvent = { //объект, который содержит имя события и данные, передаваемые вместе с событием.
     eventName: string,
     data: unknown
 };
 
+/**
+ * Интерфейс определяет методы, которые должны реализовываться любым объектом,
+ * поддерживающим работу с событиями
+ */ 
 export interface IEvents {
     on<T extends object>(event: EventName, callback: (data: T) => void): void;
     emit<T extends object>(event: string, data?: T): void;
@@ -14,6 +18,8 @@ export interface IEvents {
 }
 
 /**
+ * Класс EventEmitter реализует паттерн "Наблюдатель" (Observer Pattern).
+ * Этот паттерн позволяет объектам (наблюдателям) подписываться на события других объектов, инициировать эти события и удалять подписки.
  * Брокер событий, классическая реализация
  * В расширенных вариантах есть возможность подписаться на все события
  * или слушать события по шаблону например
@@ -27,6 +33,9 @@ export class EventEmitter implements IEvents {
 
     /**
      * Установить обработчик на событие
+     * Если для данного имени события еще нет подписчиков,
+     * создается новое множество подписчиков.
+     * Затем обработчик добавляется в это множество.
      */
     on<T extends object>(eventName: EventName, callback: (event: T) => void) {
         if (!this._events.has(eventName)) {
@@ -37,6 +46,8 @@ export class EventEmitter implements IEvents {
 
     /**
      * Снять обработчик с события
+     * Если после удаления обработчиков список становится пустым,
+     * то само событие удаляется из карты событий.
      */
     off(eventName: EventName, callback: Subscriber) {
         if (this._events.has(eventName)) {
@@ -49,6 +60,10 @@ export class EventEmitter implements IEvents {
 
     /**
      * Инициировать событие с данными
+     * Инициирует событие и вызывает всех подписчиков этого события.
+     * Если имя события совпадает со звездочкой '*', то вызов происходит
+     * для всех подписчиков. Также поддерживается сопоставление имен событий
+     * с помощью регулярных выражений.
      */
     emit<T extends object>(eventName: string, data?: T) {
         this._events.forEach((subscribers, name) => {
@@ -63,14 +78,15 @@ export class EventEmitter implements IEvents {
     }
 
     /**
-     * Слушать все события
+     * Подписаться на все события
      */
     onAll(callback: (event: EmitterEvent) => void) {
         this.on("*", callback);
     }
 
     /**
-     * Сбросить все обработчики
+     * Сбросить все активные подписки на события
+     * Все обработчики будут удалены
      */
     offAll() {
         this._events = new Map<string, Set<Subscriber>>();

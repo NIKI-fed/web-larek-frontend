@@ -2,15 +2,10 @@ import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 import { ensureElement } from "../utils/utils";
 
-// Интерфейс для данных на странице:
-// 1. Количество товаров в корзине
-// 2. Каталог товаров
-// 3. Блокировка прокрутки страницы
-
 interface IPage {
-    counter: number;
-    catalog: HTMLElement[];
-    locked: boolean;
+    counter: number; // количество товаров в корзине
+    catalog: HTMLElement[]; // массив товаров
+    locked: boolean; // блокировка прокрутки страницы
 }
 
 export class Page extends Component<IPage> {
@@ -18,7 +13,6 @@ export class Page extends Component<IPage> {
     protected _catalog: HTMLElement;
     protected _wrapper: HTMLElement;
     protected _basket: HTMLElement;
-
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);

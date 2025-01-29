@@ -1,50 +1,108 @@
-import { Component } from "./base/Component";
+import { Component } from './base/Component';
+import { IGoods } from "../types";
 import { ensureElement } from "../utils/utils";
 import { CDN_URL } from '../utils/constants';
-import { IGoods } from "../types";
 
-export class Card {
-    protected itemElement: HTMLElement;
-    protected category: HTMLElement;
-    protected title: HTMLElement;
-    protected img: HTMLImageElement;
-    protected price: HTMLElement;
+interface ICardActions {
+    onClick: (event: MouseEvent) => void;
+}
 
-    constructor (template: HTMLTemplateElement) {
-        this.itemElement = template.content.querySelector('.gallery__item').cloneNode(true)as HTMLElement;
-        
-        this.category = this.itemElement.querySelector('.card__category');
-        this.title = this.itemElement.querySelector('.card__title');
-        this.img = this.itemElement.querySelector('.card__image');
-        this.price = this.itemElement.querySelector('.card__price');
+export class Card extends Component<IGoods> {
+    protected _title: HTMLElement;
+    protected _category?: HTMLElement;
+    protected _image?: HTMLImageElement;
+    protected _description?: HTMLElement;
+    protected _price: HTMLElement;
+    protected _button?: HTMLButtonElement;
+
+    constructor (container: HTMLElement, actions?: ICardActions) {
+        super(container)
+
+        this._title = container.querySelector('.card__title');
+        this._category = container.querySelector('.card__category');
+        this._image = container.querySelector('.card__image');
+        this._description = container.querySelector('.card__description');
+        this._price = container.querySelector('.card__price');
+        this._button = container.querySelector('.card__button')
+
+        // Привязываем обработчик к кнопке, если он подключен
+        if (actions?.onClick) {
+            // Если кнопка есть, привязываем обработчик к ней
+            if (this._button) {
+                this._button.addEventListener('click', actions.onClick);
+            // Если кнопки нет, обработчик привязываем к контейнеру
+            } else {
+                container.addEventListener('click', actions.onClick);
+            }
+        }
     }
 
-    render(cards: IGoods) {
-        this.title.textContent = cards.title;
-        this.img.src = CDN_URL + cards.image;
-        this.img.alt = cards.title;
+    // Сеттер и геттер для id товара
+    set id(value: string) {
+        this.container.dataset.id = value;
+    }
 
-        // Устанвливаем категорию
-        this.category.textContent = cards.category;
-        if (cards.category === 'софт-скилл') {
-            this.category.classList.add('card__category_soft')
-        } else if (cards.category === 'другое') {
-            this.category.classList.add('card__category_other')
-        } else if (cards.category === 'дополнительное') {
-            this.category.classList.add('card__category_additional')
-        } else if (cards.category === 'кнопка') {
-            this.category.classList.add('card__category_button')
-        } else if (cards.category === 'хард-скил') {
-            this.category.classList.add('card__category_hard')
+    get id(): string {
+        return this.container.dataset.id || '';
+    }
+
+    // Сеттер и геттер для названия товара
+    set title(value: string) {
+        this.setText(this._title, value);
+    }
+
+    get title(): string {
+        return this._title.textContent || '';
+    }
+
+    // Сеттер и геттер для категориия товара
+    // с учётом разных цветов плашек
+    set category(value: string) {
+        this.setText(this._category, value);
+        
+    // Устанвливаем цвет плашки
+        if (this._category.textContent === 'софт-скил') {
+            this._category.classList.add('card__category_soft')
+        } else if (this._category.textContent === 'другое') {
+            this._category.classList.add('card__category_other')
+        } else if (this._category.textContent === 'дополнительное') {
+            this._category.classList.add('card__category_additional')
+        } else if (this._category.textContent === 'кнопка') {
+            this._category.classList.add('card__category_button')
+        } else if (this._category.textContent === 'хард-скил') {
+            this._category.classList.add('card__category_hard')
         }
+    }
 
-        //Устанавливаем цену
-        if (cards.price) {
-            this.price.textContent = cards.price + ' синапсов';
+    get category(): string {
+        return this._category.textContent || '';
+    }
+
+    // Сеттер для картинки товара
+    set image(src: string) {
+        this.setImage(this._image, src, this.title)
+    }
+
+    // Сеттер для описания товара
+    set description(value: string) {
+        this.setText(this._description, value);
+    }
+
+    // Сеттер и геттер для цены товара
+    set price(value: number | null) {
+        if (value) {
+            this.setText(this._price, `${value} синапсов`);
+            } else {
+            this.setText(this._price, 'Бесценно');
+            }
+    }
+
+    buttonText(inBasket: boolean): void {
+        if (inBasket) {
+            this._button.textContent = 'Удалить из корзины';
         } else {
-            this.price.textContent = 'Бесценно';
+            this._button.textContent = 'Добавить в корзину';
         }
-
-        return this.itemElement;
+        console.log(inBasket)
     }
 }
