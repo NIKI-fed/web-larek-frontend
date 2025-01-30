@@ -59,18 +59,20 @@ export class Card extends Component<IGoods> {
     // с учётом разных цветов плашек
     set category(value: string) {
         this.setText(this._category, value);
-        
-    // Устанвливаем цвет плашки
-        if (this._category.textContent === 'софт-скил') {
-            this._category.classList.add('card__category_soft')
-        } else if (this._category.textContent === 'другое') {
-            this._category.classList.add('card__category_other')
-        } else if (this._category.textContent === 'дополнительное') {
-            this._category.classList.add('card__category_additional')
-        } else if (this._category.textContent === 'кнопка') {
-            this._category.classList.add('card__category_button')
-        } else if (this._category.textContent === 'хард-скил') {
-            this._category.classList.add('card__category_hard')
+
+        // Устанвливаем цвет плашки категории, если она присутствует в разметке
+        if(this._category) {
+            if (this._category.textContent === 'софт-скил') {
+                this._category.classList.add('card__category_soft')
+            } else if (this._category.textContent === 'другое') {
+                this._category.classList.add('card__category_other')
+            } else if (this._category.textContent === 'дополнительное') {
+                this._category.classList.add('card__category_additional')
+            } else if (this._category.textContent === 'кнопка') {
+                this._category.classList.add('card__category_button')
+            } else if (this._category.textContent === 'хард-скил') {
+                this._category.classList.add('card__category_hard')
+            }
         }
     }
 
@@ -94,15 +96,15 @@ export class Card extends Component<IGoods> {
             this.setText(this._price, `${value} синапсов`);
             } else {
             this.setText(this._price, 'Бесценно');
-            }
+        }
     }
 
-    buttonText(inBasket: boolean): void {
-        if (inBasket) {
-            this._button.textContent = 'Удалить из корзины';
-        } else {
-            this._button.textContent = 'Добавить в корзину';
+    // Установливаем надпись на кнопке
+    button(value: boolean) {
+        if (value) {
+            this.setText(this._button, 'Удалить из корзины');
+            } else {
+            this.setText(this._button, 'Добавить в корзину');
         }
-        console.log(inBasket)
     }
 }

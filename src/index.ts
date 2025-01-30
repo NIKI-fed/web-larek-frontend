@@ -36,6 +36,7 @@ events.onAll(({ eventName, data }) => {
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const itemBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const modalTemplate = ensureElement<HTMLElement>('#modal-container');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
@@ -53,12 +54,13 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 // const contactData = 
 // const success =
 
-
-
-
+// window.addEventListener('scroll', function () {
+//     const scrollPosition = window.scrollY;
+//     console.log(scrollPosition);
+// })
 
 // Событие: изменились элементы каталога и отрисовка на странице
-events.on('items:change', (item: IGoods) => {
+events.on('items:change', () => {
     page.catalog = appData.catalog.map((item) => {
         const card = new Card(cloneTemplate(cardCatalogTemplate), {
             onClick: () => events.emit('card:select', item)
@@ -73,8 +75,9 @@ events.on('modal:open', () => {
 });
 
 // Событие: закрытие модального окна
-events.on('modal:close', () => {
+events.on('modal:close', (sc) => {
     page.locked = false;
+    console.log(sc)
 });
 
 // Событие: выбор товара для модального окна (превью)
@@ -89,17 +92,19 @@ events.on('preview:change', (item: IGoods) => {
         onClick: () => {
             if (appData.goodsInBasket(item)) {
                 appData.removeGoodsFromBasket(item);
-                card.buttonText(true);
-                
+                card.button(appData.goodsInBasket(item));
             } else {
                 appData.addGoodsInBasket(item);
-                card.buttonText(false);
+                card.button(appData.goodsInBasket(item));
+                //card.button = 'Удалить из корзины';
             }
         }
     });
-    // Устанавливаем текст на кнопке в зависимости от того, добавлен ли товар в корзину
-    card.buttonText(appData.goodsInBasket(item));
+    // Отрисовываем карточку
     modal.render({content: card.render(item)});
+
+    // Устанавливаем текст на кнопке в момент открытия в зависимости от того, добавлен ли товар в корзину
+    card.button(appData.goodsInBasket(item));
 });
 
 // Событие: открыте корзины
@@ -116,18 +121,21 @@ events.on('basket:change', () => {
 
 // Событие: изменение корзины
 
-// events.on('basket:change', () => {
-//     basket.items = appData.basket.goods.map((goodsID) => {
-//         //console.log(appData.basket.goods)
-//         const item = appData.catalog.find((catalogItem) => catalogItem.id === goodsID);
-//         //console.log(appData.catalog)
-//         const card = new Card(cloneTemplate(basketTemplate), {
-//             onClick: () => appData.removeGoodsFromBasket(item), // Удаление товара из корзины
-//         });
-//         return card.render(item);
-//     });
+events.on('basket:change', () => {
+    basket.items = appData.basket.goods.map((id) => {
 
-//     basket.total = appData.basket.total_cost;
-// });
+        // Для каждого товара в корзине ищем товар в каталоге по id
+        const item = appData.catalog.find((item) => item.id === id);
+        const card = new Card(cloneTemplate(itemBasketTemplate), {
+            onClick: () => {
+                appData.removeGoodsFromBasket(item)
+            }
+        });
+        //card.i = (index + 1).toString
+        return card.render(item);
+    });
+
+    basket.total = appData.basket.total_cost;
+});
 
 

@@ -7,6 +7,7 @@ export interface IGoods {
     title: string;
     category: string;
     price: number | null;
+    buttonText?: string;
 }
 
 // Интерфейс для описания корзины

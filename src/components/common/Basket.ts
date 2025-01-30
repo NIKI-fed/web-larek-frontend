@@ -39,9 +39,10 @@ export class Basket extends Component<IBasketView> {
             // делаем кнопку активной
             this.toggleButton(true);
         } else {
-            this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
+            this._list.replaceChildren(
+                createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
-            }));
+                }));
             // делаем кнопку неактивной
             this.toggleButton(false);
         }
