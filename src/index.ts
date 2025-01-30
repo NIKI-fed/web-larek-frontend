@@ -9,6 +9,8 @@ import { Basket } from './components/common/Basket';
 import { AppData } from './components/AppData';
 import { Card } from './components/Card';
 import { IGoods } from './types';
+import { PaymentAddress } from './components/PaymentAddressForm';
+import { ContactsForm } from './components/ContactsForm';
 
 
 // Создание объекта событий
@@ -38,7 +40,7 @@ const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const itemBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const modalTemplate = ensureElement<HTMLElement>('#modal-container');
-const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const paymentAddress = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
@@ -46,6 +48,8 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 const page = new Page(document.body, events);
 const modal = new Modal(modalTemplate, events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
+const orderForm = new PaymentAddress(cloneTemplate(paymentAddress), events);
+const contacts = new ContactsForm(cloneTemplate(contactsTemplate), events);
 
 // 4. способ оплаты/адрес
 // 5. контактные данные
@@ -75,9 +79,8 @@ events.on('modal:open', () => {
 });
 
 // Событие: закрытие модального окна
-events.on('modal:close', (sc) => {
+events.on('modal:close', () => {
     page.locked = false;
-    console.log(sc)
 });
 
 // Событие: выбор товара для модального окна (превью)
@@ -102,7 +105,6 @@ events.on('preview:change', (item: IGoods) => {
     });
     // Отрисовываем карточку
     modal.render({content: card.render(item)});
-
     // Устанавливаем текст на кнопке в момент открытия в зависимости от того, добавлен ли товар в корзину
     card.button(appData.goodsInBasket(item));
 });
@@ -114,28 +116,57 @@ events.on('basket:open', () => {
     });
 });
 
-// Событие: обновление счётчика корзины
-events.on('basket:change', () => {
-    page.counter = appData.basket.goods.length;
-})
-
 // Событие: изменение корзины
-
 events.on('basket:change', () => {
+    // Обновление счётчика
+    page.counter = appData.basket.goods.length;
     basket.items = appData.basket.goods.map((id) => {
-
-        // Для каждого товара в корзине ищем товар в каталоге по id
         const item = appData.catalog.find((item) => item.id === id);
         const card = new Card(cloneTemplate(itemBasketTemplate), {
             onClick: () => {
                 appData.removeGoodsFromBasket(item)
             }
         });
-        //card.i = (index + 1).toString
         return card.render(item);
     });
-
     basket.total = appData.basket.total_cost;
 });
 
+// Событие: открытие формы способ оплаты/адрес
+events.on('order:open', () => {
+    modal.render({content: orderForm.render({
+                                                payment: null,
+                                                address: '',
+                                                valid: false,
+                                                errors: []
+                                                })
+                })
+    
+    if (orderForm.valid) {
+        console.log('sdfksd')
+    }
 
+})
+
+// Событие: submit формы оплаты/адрес
+events.on('order:submit', () => {
+    modal.render({content: contacts.render({
+                                                email: null,
+                                                phone: '',
+                                                valid: false,
+                                                errors: []
+                                                })
+                })
+    })
+
+
+    /*События:
+    
+    именение формы оплаты/адреса
+    сабмит формы оплата/адрес
+
+    изменение формы контактов
+    сабмит формы контактов
+    отправка данный на сервер
+    очищение корзины, сброс заказа
+    */

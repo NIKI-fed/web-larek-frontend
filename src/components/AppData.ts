@@ -70,37 +70,42 @@ export class AppData {
     }
 
     // Выбор способа оплаты
-    setPayment(method: PaymentMethod) {
+    setPaymentMethod(method: PaymentMethod) {
         this.order.payment = method;
     }
 
+    // // Установка значения для данного поля формы
+    // setOrderField(field: keyof IOrder, value: string) {
+    //     // Если поле - это поле 'payment', то вызываем указанный метод
+    //     if (field === 'payment') {
+    //         this.setPaymentMethod(value as PaymentMethod);
+    //     // Если нет - подставляем значение value
+    //     } 
+    //     // else {
+    //     //     this.order[field] = value;
+    //     // }
+    // }
 
     // Валидация формы заказа
     validateOrder() {
         const errors: typeof this.formErrors = {};
+
         if (!this.order.address) {
             errors.address = 'Необходимо указать адрес';
         }
-        this.formErrors = errors;
-        this.events.emit('orderFormErrors:change', this.formErrors);
-        return Object.keys(errors).length === 0;
-    }
-
-    // Валидация формы контактов
-    validateContact() {
-        const errors: typeof this.formErrors = {};
         if (!this.order.email) {
             errors.email = 'Необходимо указать email';
         }
         if (!this.order.phone) {
             errors.phone = 'Необходимо указать телефон';
         } 
+
         this.formErrors = errors;
-        this.events.emit('contactsFormErrors:change', this.formErrors);
+        this.events.emit('orderFormErrors:change', this.formErrors);
         return Object.keys(errors).length === 0;
     }
 
-    // Очищает данные заказа
+    // Очистка данных заказа
     clearOrder() {
         this.order = {
             email: '',

@@ -44,7 +44,7 @@ export interface ISuccess {
 }
 
 // Тип оплаты
-export type PaymentMethod = 'card' | 'cash'
+export type PaymentMethod = 'card' | 'cash' | null
 
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
