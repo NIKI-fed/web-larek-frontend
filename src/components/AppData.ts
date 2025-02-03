@@ -1,5 +1,6 @@
 import { IGoods, IBasket, IOrder, IContactData, PaymentMethod } from "../types";
 import { IEvents } from "./base/events";
+import { settings } from "../utils/constants";
 
 export class AppData {
     catalog: IGoods[] = []; // массив со всеми товарами
@@ -53,13 +54,6 @@ export class AppData {
         this.events.emit('basket:change', this.basket);
     }
 
-    // Очищаем корзину
-    clearBasket() {
-        this.basket.items = [];
-        this.basket.total = 0;
-        this.events.emit('basket:change');
-    }
-
     // Выбор способа оплаты
     setPaymentMethod(method: PaymentMethod) {
         this.order.payment = method;
@@ -68,13 +62,12 @@ export class AppData {
     // Валидация формы оплата/адрес
     validatePaymentAddressForm(): boolean {
         const errors: typeof this.formErrors = {};
-        const addressRegex = /^[a-zA-Zа-яА-ЯёЁ0-9.,\-/\s]{5,}$/;
-
+        
         if (!this.order.payment) {
             errors.payment = 'Выберите способ оплаты';
         } else if (!this.order.address) {
             errors.address = 'Необходимо указать адрес доставки';
-        } else if (!addressRegex.test(this.order.address)) {
+        } else if (!settings.addressRegex.test(this.order.address)) {
             errors.address = 'Некорректный адрес';
         }
 
@@ -99,18 +92,16 @@ export class AppData {
     // Валидация формы контактов
     validateContact(): boolean {
         const errors: typeof this.formErrors = {};
-        const emailRegex = /^[1]/ // /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        const phoneRegex = /^[1]/ // /^(\+7)\s?\(?\d{3}\)\s??\d{3}-\d{2}-\d{2}$/;
 
         if (!this.order.email) {
             errors.email = 'Необходимо указать email';
-        } else if (!emailRegex.test(this.order.email)) {
+        } else if (!settings.emailRegex.test(this.order.email)) {
             errors.email = 'Некорректный email';
         }
 
         if (!this.order.phone) {
             errors.phone = 'Необходимо указать номер телефона';
-        } else if (!phoneRegex.test(this.order.phone)) {
+        } else if (!settings.phoneRegex.test(this.order.phone)) {
             errors.phone = 'Введите номер телефона в формате +7 (495) 123-45-67';
         }
 
@@ -132,6 +123,18 @@ export class AppData {
         }
     }
 
+    // Проверка на наличие бесценного товара в корзине
+    checkPriceless(goods: string) {
+        if (this.basket.items.includes(goods)) {
+            // Находим индекс элемента
+            const index = this.basket.items.findIndex(item => item === goods);
+            if (index > -1) {
+                // Удаляем найденный элемент
+                this.basket.items.splice(index, 1);
+            }
+        }
+    }
+
     // Очистка данных заказа
     clearOrder() {
         this.order = {
@@ -140,5 +143,12 @@ export class AppData {
             address: '',
             payment: null,
         };
+    }
+
+    // Очистка корзины
+    clearBasket() {
+        this.basket.items = [];
+        this.basket.total = 0;
+        this.events.emit('basket:change');
     }
 }

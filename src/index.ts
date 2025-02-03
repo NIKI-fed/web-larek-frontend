@@ -1,5 +1,5 @@
 import './scss/styles.scss';
-import { API_URL, CDN_URL } from './utils/constants';
+import { API_URL, CDN_URL, settings } from './utils/constants';
 import { LarekAPI } from './components/LarekAPI';
 import { EventEmitter } from './components/base/events';
 import { ensureElement, cloneTemplate } from './utils/utils';
@@ -8,11 +8,10 @@ import { Modal } from './components/Modal';
 import { Basket } from './components/common/Basket';
 import { AppData } from './components/AppData';
 import { Card } from './components/Card';
-import { IGoods, IContactData, IPaymentMethod } from './types';
+import { IGoods, IContactData } from './types';
 import { PaymentAddress } from './components/PaymentAddressForm';
 import { ContactsForm } from './components/ContactsForm';
 import { Success } from './components/Success';
-
 
 // Создание объекта событий
 const events = new EventEmitter();
@@ -27,9 +26,9 @@ api.getGoodsList()
     .catch(console.error);
 
 // Чтобы мониторить все события, для отладки
-events.onAll(({ eventName, data }) => {
-    console.log(eventName, data);
-})
+// events.onAll(({ eventName, data }) => {
+//     console.log(eventName, data);
+// })
 
 // Создание шаблонов из DOM
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -153,14 +152,11 @@ events.on('order:submit', () => {
             errors: []
         })
     })
-    console.log(appData.basket)
 })
 
 // Изменение полей формы контактов
 events.on(/^contacts\..*:change/, (data: {field: keyof IContactData, value: string}) => {
     appData.setContact(data.field, data.value);
-    //appData.validateContact();
-    console.log('change')
 });
 
 // Обработка ошибок формы контактов
@@ -170,11 +166,20 @@ events.on('contactFormErrors:change', (errors: Partial<IContactData>) => {
     contacts.errors = Object.values({email, phone}).filter(i => !!i).join('; ');
 });
 
-// Submit формы контактов и отправка на сервер
+// Событие: форма заполнена корректно
+events.on('contact:ready', () => {
+    contacts.valid = true;
+});
+
 events.on('contacts:submit', () => {
-    console.log(appData.order, appData.basket);
+    events.emit('success:open');
+});
+
+events.on('success:open', () => {
     // Если стоимость корзины не равна 0, то отправляем заказ на сервер
     if ((appData.basket.total != 0)) {
+        // Если корзина содержит бесценный товар, то удаляем его перед отправкой на сервер, чтобы не было ошибки
+        appData.checkPriceless(settings.priceless);
         api.postOrder({
         ...appData.order,
         ...appData.basket
@@ -189,33 +194,6 @@ events.on('contacts:submit', () => {
         })
         .catch(console.error);
     } else {
-        alert('Товар бесценен!')
+        alert('Товар бесценен!');
     }
 });
-
-// // Submit формы контактов и отправка на сервер
-// events.on('contacts:submit', () => {
-//     console.log(appData.order, appData.basket);
-//     // Если стоимость корзины не равна 0, то отправляем заказ на сервер
-//     if ((appData.basket.total != 0)) {
-//         if (appData.basket.includes() ) {
-
-        
-//             api.postOrder({
-//             ...appData.order,
-//             ...appData.basket
-//             })
-//             .then((data) => {
-//                 modal.render({
-//                     content: success.render(),
-//                 });
-//                 success.total = data.total;
-//                 appData.clearBasket();
-//                 appData.clearOrder();
-//             })
-//             .catch(console.error);
-//         }
-//     } else {
-//         alert('Товар бесценен!')
-//     }
-// });
