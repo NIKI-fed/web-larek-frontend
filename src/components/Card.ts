@@ -12,6 +12,7 @@ export class Card extends Component<IGoods> {
     protected _description?: HTMLElement;
     protected _price: HTMLElement;
     protected _button?: HTMLButtonElement;
+    protected _index?: HTMLElement;
 
     constructor (container: HTMLElement, actions?: ICardActions) {
         super(container)
@@ -21,7 +22,8 @@ export class Card extends Component<IGoods> {
         this._image = container.querySelector('.card__image');
         this._description = container.querySelector('.card__description');
         this._price = container.querySelector('.card__price');
-        this._button = container.querySelector('.card__button')
+        this._button = container.querySelector('.card__button');
+        this._index = container.querySelector('.basket__item-index');
 
         // Привязываем обработчик к кнопке, если он подключен
         if (actions?.onClick) {
@@ -51,6 +53,10 @@ export class Card extends Component<IGoods> {
 
     get title(): string {
         return this._title.textContent || '';
+    }
+
+    set index(value: string) {
+        this._index.textContent = value;
     }
 
     // Сеттер и геттер для категориия товара

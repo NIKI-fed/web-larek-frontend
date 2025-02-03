@@ -38,5 +38,5 @@ export class LarekAPI extends Api implements ILarekAPI {
         return this.post('/order', order)
         .then((data: ISuccess) => data);
     }
-
+    
 }

@@ -1,4 +1,3 @@
-
 // Интерфейс для описания товара
 export interface IGoods {
     id: string;
@@ -8,6 +7,7 @@ export interface IGoods {
     category: string;
     price: number | null;
     buttonText?: string;
+    index?: string;
 }
 
 // Интерфейс для описания корзины
@@ -46,7 +46,4 @@ export interface ISuccess {
 
 // Тип оплаты
 export type PaymentMethod = 'card' | 'cash' | null
-
-
-//export type FormErrors = Partial<Record<keyof IOrder, string>>;
 

@@ -106,14 +106,19 @@ events.on('basket:open', () => {
 events.on('basket:change', () => {
     // Обновление счётчика
     page.counter = appData.basket.items.length;
-    basket.items = appData.basket.items.map((id) => {
+    basket.items = appData.basket.items.map((id, index) => {
         const item = appData.catalog.find((item) => item.id === id);
         const card = new Card(cloneTemplate(itemBasketTemplate), {
             onClick: () => {
                 appData.removeGoodsFromBasket(item)
             }
         });
-        return card.render(item);
+        return card.render({
+            title: item.title,
+            price: item.price,
+            // Нумерация списка с 1
+            index: (index+1).toString(),
+        });
     });
     basket.total = appData.basket.total;
 });
@@ -185,10 +190,10 @@ events.on('success:open', () => {
         ...appData.basket
         })
         .then((data) => {
+            success.total = data.total;
             modal.render({
                 content: success.render(),
             });
-            success.total = data.total;
             appData.clearBasket();
             appData.clearOrder();
         })
