@@ -1,11 +1,11 @@
 import { Form } from "./common/Form";
-import { IOrder } from "../types";
+import { IContactData } from "../types";
 import { IEvents } from "./base/events";
 import { ensureElement } from "../utils/utils";
 
-export class ContactsForm extends Form<IOrder> {
-        protected _email: HTMLInputElement; // Поле ввода адреса
-        protected _phone: HTMLInputElement; // Поле ввода адреса
+export class ContactsForm extends Form<IContactData> {
+        protected _email: HTMLInputElement; // Поле ввода email
+        protected _phone: HTMLInputElement; // Поле ввода телефона
 
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);

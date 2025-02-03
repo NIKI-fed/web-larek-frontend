@@ -1,6 +1,6 @@
 import { Form } from "./common/Form";
 import { IOrder, PaymentMethod } from "../types";
-import { EventEmitter, IEvents } from "./base/events";
+import { IEvents } from "./base/events";
 import { ensureElement } from "../utils/utils";
 
 export class PaymentAddress extends Form<IOrder> {
@@ -23,7 +23,7 @@ export class PaymentAddress extends Form<IOrder> {
 
         this._buttonPaymentCash.addEventListener('click', () => {
             this.payment = 'cash';
-            this.onInputChange('payment', 'card');
+            this.onInputChange('payment', 'cash');
         });
     };
 

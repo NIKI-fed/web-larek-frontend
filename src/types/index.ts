@@ -12,8 +12,8 @@ export interface IGoods {
 
 // Интерфейс для описания корзины
 export interface IBasket {
-    goods: string[]; // товары в корзине по id
-    total_cost: number; // стоимость товаров в корзине
+    items: string[]; // товары в корзине по id
+    total: number; // стоимость товаров в корзине
 }
 
 // Интерфейс для описания способа оплаты
@@ -23,6 +23,7 @@ export interface IPaymentMethod {
 
 // Интерфейс для описания контактных данных покупателя
 export interface IContactData {
+    payment: string;
     address: string;
     email: string;
     phone: string;
@@ -47,5 +48,5 @@ export interface ISuccess {
 export type PaymentMethod = 'card' | 'cash' | null
 
 
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+//export type FormErrors = Partial<Record<keyof IOrder, string>>;
 

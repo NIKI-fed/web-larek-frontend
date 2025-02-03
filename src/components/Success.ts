@@ -2,8 +2,6 @@ import { Component } from "./base/Component";
 import { ensureElement } from "../utils/utils";
 import { ISuccess } from "../types";
 
-
-
 interface ISuccessActions {
     onClick: () => void;
 }

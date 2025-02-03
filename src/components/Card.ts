@@ -1,7 +1,5 @@
 import { Component } from './base/Component';
 import { IGoods } from "../types";
-import { ensureElement } from "../utils/utils";
-import { CDN_URL } from '../utils/constants';
 
 interface ICardActions {
     onClick: (event: MouseEvent) => void;
