@@ -1,6 +1,6 @@
 import { IGoods, IBasket, IOrder, IContactData, PaymentMethod } from "../types";
 import { IEvents } from "./base/events";
-import { settings } from "../utils/constants";
+import { settings, validError } from "../utils/constants";
 
 export class AppData {
     catalog: IGoods[] = []; // массив со всеми товарами
@@ -10,7 +10,7 @@ export class AppData {
         total: 0, // стоимость товаров в корзине
     };
     order: IOrder = {
-        payment: null, // метод оплаты по умолчанию
+        payment: 'card', // метод оплаты по умолчанию
         address: '',
         email: '',
         phone: ''
@@ -64,11 +64,11 @@ export class AppData {
         const errors: typeof this.formErrors = {};
         
         if (!this.order.payment) {
-            errors.payment = 'Выберите способ оплаты';
+            errors.payment = validError.setPayment;
         } else if (!this.order.address) {
-            errors.address = 'Необходимо указать адрес доставки';
+            errors.address = validError.setAddress;
         } else if (!settings.addressRegex.test(this.order.address)) {
-            errors.address = 'Некорректный адрес';
+            errors.address = validError.checkAddress;
         }
 
         this.formErrors = errors;
@@ -94,15 +94,15 @@ export class AppData {
         const errors: typeof this.formErrors = {};
 
         if (!this.order.email) {
-            errors.email = 'Необходимо указать email';
+            errors.email = validError.setEmail;
         } else if (!settings.emailRegex.test(this.order.email)) {
-            errors.email = 'Некорректный email';
+            errors.email = validError.checkEmail;
         }
 
         if (!this.order.phone) {
-            errors.phone = 'Необходимо указать номер телефона';
+            errors.phone = validError.setPhone;
         } else if (!settings.phoneRegex.test(this.order.phone)) {
-            errors.phone = 'Введите номер телефона в формате +7 (495) 123-45-67';
+            errors.phone = validError.checkPhone;
         }
 
         this.formErrors = errors;
@@ -138,10 +138,10 @@ export class AppData {
     // Очистка данных заказа
     clearOrder() {
         this.order = {
+            payment: 'card',
+            address: '',
             email: '',
             phone: '',
-            address: '',
-            payment: null,
         };
     }
 

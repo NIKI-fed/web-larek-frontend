@@ -16,11 +16,6 @@ export interface IBasket {
     total: number; // стоимость товаров в корзине
 }
 
-// Интерфейс для описания способа оплаты
-export interface IPaymentMethod {
-    payment: string;
-}
-
 // Интерфейс для описания контактных данных покупателя
 export interface IContactData {
     payment: string;
@@ -45,5 +40,5 @@ export interface ISuccess {
 }
 
 // Тип оплаты
-export type PaymentMethod = 'card' | 'cash' | null
+export type PaymentMethod = 'card' | 'cash'
 

@@ -30,7 +30,7 @@ export class Basket extends Component<IBasketView> {
         this.items = [];
     }
 
-    // сеттер для обнолвения списка товаров в корзине
+    // сеттер для обновления списка товаров в корзине
     set items(items: HTMLElement[]) {
 
         // Если корзина не пуста...

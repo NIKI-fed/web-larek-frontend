@@ -82,17 +82,17 @@ events.on('preview:change', (item: IGoods) => {
         onClick: () => {
             if (appData.goodsInBasket(item)) {
                 appData.removeGoodsFromBasket(item);
-                card.button(appData.goodsInBasket(item));
+                card.setButtonText(appData.goodsInBasket(item));
             } else {
                 appData.addGoodsInBasket(item);
-                card.button(appData.goodsInBasket(item));
+                card.setButtonText(appData.goodsInBasket(item));
             }
         }
     });
     // Отрисовываем карточку
     modal.render({content: card.render(item)});
     // Устанавливаем текст на кнопке в момент открытия в зависимости от того, добавлен ли товар в корзину
-    card.button(appData.goodsInBasket(item));
+    card.setButtonText(appData.goodsInBasket(item));
 });
 
 // Событие: открыте корзины
@@ -127,7 +127,7 @@ events.on('basket:change', () => {
 events.on('order:open', () => {
     modal.render({
         content: paymentAddressForm.render({
-            payment: null,
+            payment: 'card',
             address: '',
             valid: false,
             errors: []
@@ -138,7 +138,6 @@ events.on('order:open', () => {
 // Изменение полей формы оплата/адрес
 events.on(/^order\..*:change/, (data: {field: keyof IContactData, value: string}) => {
     appData.setPaymentAddress(data.field, data.value);
-    //appData.validatePaymentAddressForm();
 });
 
 // Обработка ошибок формы оплаты/адрес
@@ -181,24 +180,17 @@ events.on('contacts:submit', () => {
 });
 
 events.on('success:open', () => {
-    // Если стоимость корзины не равна 0, то отправляем заказ на сервер
-    if ((appData.basket.total != 0)) {
-        // Если корзина содержит бесценный товар, то удаляем его перед отправкой на сервер, чтобы не было ошибки
-        appData.checkPriceless(settings.priceless);
-        api.postOrder({
-        ...appData.order,
-        ...appData.basket
-        })
-        .then((data) => {
-            success.total = data.total;
-            modal.render({
-                content: success.render(),
-            });
-            appData.clearBasket();
-            appData.clearOrder();
-        })
-        .catch(console.error);
-    } else {
-        alert('Товар бесценен!');
-    }
+    api.postOrder({
+    ...appData.order,
+    ...appData.basket
+    })
+    .then((data) => {
+        success.total = data.total;
+        modal.render({
+            content: success.render(),
+        });
+        appData.clearBasket();
+        appData.clearOrder();
+    })
+    .catch(console.error);
 });
